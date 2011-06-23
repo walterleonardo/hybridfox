@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<!DOCTYPE window SYSTEM "chrome://ec2ui/locale/ec2ui.dtd">
+
+<dialog id="ec2ui.dialog.createvpnconnection"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    buttons="accept,cancel"
+    ondialogaccept="return ec2_VpnConnectionCreator.createVpnConnection();"
+    ondialogcancel="return true;" onload="ec2_VpnConnectionCreator.init();"
+    title="&ec2ui.dialog.title.create_vpn_connection;"
+    buttonlabelaccept="&ec2ui.dialog.button.accept.create_vpn_connection.label;">
+
+    <script type="application/x-javascript" src="chrome://ec2ui/content/create_vpn_connection_dialog.js" />
+    <script type="application/x-javascript" src="chrome://ec2ui/content/model.js" />
+
+    <vbox flex="1">
+        <grid flex="1">
+            <columns>
+                <column />
+                <column />
+            </columns>
+            <rows>
+                <!-- Peering Gateway -->
+                <row>
+                    <label control="ec2ui.newvpnconnection.vgwid"
+                           value="&ec2ui.vpngateway.vgwid.label;:"/>
+                    <hbox>
+                        <menulist id="ec2ui.newvpnconnection.vgwid"/>
+                    </hbox>
+                </row>
+
+                <!-- Customer Gateway -->
+                <row>
+                    <label control="ec2ui.newvpnconnection.cgwid"
+                           value="&ec2ui.customergateway.cgwid.label;:"/>
+                    <hbox>
+                        <menulist id="ec2ui.newvpnconnection.cgwid"/>
+                    </hbox>
+                </row>
+            </rows>
+        </grid>
+    </vbox>
+</dialog>
