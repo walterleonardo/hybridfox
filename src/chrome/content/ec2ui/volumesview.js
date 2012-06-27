@@ -87,7 +87,7 @@ var ec2ui_VolumeTreeView = {
                         this.treeBox.rowCountChanged(0, -this.imageList.length);
                 }
                 this.imageList = imageList;
-                this.treeBox.rowCountChanged(0, this.imageList.length);
+                	this.treeBox.rowCountChanged(0, this.imageList.length);
                 this.sort();
 
                 // reselect old selection

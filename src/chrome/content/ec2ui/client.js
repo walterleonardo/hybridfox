@@ -261,8 +261,8 @@ var ec2_httpclient = {
     },
 
     queryEC2Impl : function (action, params, objActions, isSync, reqType, callback) {
-        var curTime = new Date();
-        if (ec2ui_session.isAmazonEndpointSelected()) {
+	var curTime = new Date();
+        if (ec2ui_session.isAmazonEndpointSelected() || ec2ui_session.isCloudstackEndpointSelected()) {
             var formattedTime = this.formatDate(curTime, "yyyy-MM-ddThh:mm:ssZ");
         }
         else {
@@ -270,8 +270,8 @@ var ec2_httpclient = {
         }
 
         var sigValues = new Array();
-        sigValues.push(new Array("Action", action));
         sigValues.push(new Array("AWSAccessKeyId", this.accessCode));
+        sigValues.push(new Array("Action", action));
 
 	var signatureVersion="1";
 	var apiVersion=this.API_VERSION;
@@ -281,8 +281,8 @@ var ec2_httpclient = {
         	sigValues.push(new Array("SignatureMethod","HmacSHA1"));
 	}
 	sigValues.push(new Array("SignatureVersion",signatureVersion));
+	sigValues.push(new Array("Timestamp",formattedTime));
         sigValues.push(new Array("Version",apiVersion));
-        sigValues.push(new Array("Timestamp",formattedTime));
 
         // Mix in the additional parameters. params must be an Array of tuples as for sigValues above
         for (var i = 0; i < params.length; i++) {
@@ -290,7 +290,13 @@ var ec2_httpclient = {
         }
 
         // Sort the parameters by their lowercase name
-        sigValues.sort(this.sigParamCmp);
+	/* We dont sort query params for Cloudstack/Cloudbridge 1.1.2 since requires
+		 parameters in the following order:
+		AWSAccessKeyId, Action, SignatureMethod, SignatureVersion, Timestamp, Version 
+	*/
+	if(!ec2ui_session.isCloudstackEndpointSelected()){
+        	sigValues.sort(this.sigParamCmp);
+	}
 
         // Construct the string to sign and query string
         var strSig = "";
@@ -318,7 +324,7 @@ var ec2_httpclient = {
 		if(!endsWith(path, "/")){
 			path = path+"/";
 		}
-		strSig = "POST\n"+host+"\n"+path+"\n";
+		strSig = "POST\n"+host+"\n"+path+"\n"+queryParams;
 	}
 
         var sig = b64_hmac_sha1(this.secretKey, strSig);
