@@ -1445,12 +1445,7 @@ var ec2ui_controller = {
     },
 
     onCompleteDescribeKeypairs : function (objResponse) {
-//TODO
-alert(objResponse.toString());
         var xmlDoc = objResponse.xmlDoc;
-
-//TODO
-alert(xmlDoc.toString());
 
         var list = new Array();
         var items = xmlDoc.getElementsByTagName("item");

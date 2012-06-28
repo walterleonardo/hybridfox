@@ -290,13 +290,7 @@ var ec2_httpclient = {
         }
 
         // Sort the parameters by their lowercase name
-	/* We dont sort query params for Cloudstack/Cloudbridge 1.1.2 since requires
-		 parameters in the following order:
-		AWSAccessKeyId, Action, SignatureMethod, SignatureVersion, Timestamp, Version 
-	*/
-	if(!ec2ui_session.isCloudstackEndpointSelected()){
-        	sigValues.sort(this.sigParamCmp);
-	}
+	sigValues.sort(this.sigParamCmp);
 
         // Construct the string to sign and query string
         var strSig = "";
@@ -306,6 +300,15 @@ var ec2_httpclient = {
             queryParams += sigValues[i][0] + "=" + encodeURIComponent(sigValues[i][1]);
             if (i < sigValues.length-1)
                 queryParams += "&";
+        }
+	/* 
+         * Cloudstack/Cloudbridge 1.1.2 requires sorted parameters except for the AWSAccessKeyId,
+         * which must be the first one. We should fix queryParams, to get a valid signature on CS
+         */
+        if(ec2ui_session.isCloudstackEndpointSelected()){
+		var accessKeyParam = "AWSAccessKeyId="+this.accessCode+"&"
+                queryParams = queryParams.replace(accessKeyParam, "");
+		queryParams = accessKeyParam + queryParams;
         }
 
         log("StrSig ["+strSig+"]");
